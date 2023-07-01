@@ -1,41 +1,7 @@
 const User = require('../User');
 const express =  require('express');
 const router =  express.Router();
-const mongoose = require('mongoose');
-//====================================================================
-const customerSchema =  mongoose.Schema({
-    name: {
-      type: String,
-      required: true,
-      minlength: 3,
-      maxlength: 50
-},
-    email: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 50
-    },
-    password: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 50
-    },
-    phonenumber: {
-      type: Number,
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 50
-    },
-    Date:{type: Date , default: Date.now()}
-});
-
-const Customer = mongoose.model('Customer', customerSchema);
+const {Customer} = require('../models/customers')
 //====================================================================
 // class Customer extends User{
 //     constructor(id,name,email,password,phonenumber, address){
@@ -52,8 +18,13 @@ router.post('/create-user',async (req,res)=>{
        phonenumber: req.body.phonenumber,
        address: req.body.address
     });
-    const result = await customer.save();
-    res.send(result);
+    try{
+        const result = await customer.save();
+        res.send(result);
+    }
+    catch(err){
+        res.send(err.message);
+    }
  });
 //get users
 router.get('/users',async (req,res)=>{
@@ -64,7 +35,12 @@ router.get('/users',async (req,res)=>{
  router.get('/:id',async (req,res)=>{
     const customer =  await Customer.findById(req.params.id);
     if(!customer) return res.status(404).send('invalid id');
-    res.send(customer);
+    try{
+        res.send(customer);
+    }
+    catch(err){
+        res.send(err.message);
+    }
  });
  //update user 
  router.put('/:id', async(req,res)=>{
@@ -76,13 +52,24 @@ router.get('/users',async (req,res)=>{
        address: req.body.address
     }, {new:true});
     if(!customer) return res.status(404).send('invalid id');
-    res.send(customer);
+    try{
+        res.send(customer);
+    } 
+    catch(err){
+        res.send(err.message);
+    }
+    
  });
  //delete user 
  router.delete('/:id', async(req,res)=>{
     const customer = await Customer.findByIdAndRemove(req.params.id);
     if(!customer) return res.status(404).send('invalid id');
-    res.send(customer);
+    try{
+        res.send(customer);
+    }
+    catch(err){
+        res.send(err.message);
+    } 
  });
 
 
